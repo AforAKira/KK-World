@@ -1,3 +1,2 @@
 # KK-World
-Its a test repository
-
+This is a shell script repository
