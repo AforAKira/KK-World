@@ -13,8 +13,8 @@ do
 		echo -ne "* "
 	done
 	echo -e "\n"
-
 done
+
 x=$((x -1 ))
 for (( i=1; i <= $x; ++i ))
 do
