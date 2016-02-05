@@ -1,0 +1,55 @@
+#! /bin/bash
+
+## Script to copy test data from Test mahcines to Test data under server
+
+spath=/disk1/Test
+dpath=/jobs/tvcResources/bangComms/Kiran
+
+echo -en "\nEnter division 2D or 3D and press [ENTER]:"
+read div
+if [ $div == "2D" ] || [ $div == "2d" ]
+then
+        spath=($spath/2D)
+        dpath=($dpath/2D)
+#       echo "Source path : "$spath
+        echo -e "\n 1. Roto \n 2. Rotoprep \n 3. Comp"
+        echo -en "\n Enter a Department no. from above : "
+        read dept
+#       dept=$( tr '[:upper:]' '[:lower:]' <<<"$dept" )
+        echo -e "\nEntered department :" $dept
+        echo -en "\nYou have selected : "
+        case "$dept" in
+                1)
+                        echo -en "Roto \ndata getting copied....! \n"
+                        spath=($spath/Roto/Candidate/)
+                        dpath=($dpath/Roto/Candidate/)
+                        todayDir=`date +%d-%m-%Y`
+                        dpath=($dpath$todayDir)
+                        if [ -d $dpath ]
+                        then
+                                echo " This directory exists"
+                        else
+                                `mkdir -p $dpath`;echo "directory getting created"
+                        fi
+                        cp -rv $spath $dpath
+                        echo -en "SOurce path ::$spath\n Destiname path :: $dpath\n"
+                        ;;
+                2)
+                        echo -en "Rotoprep \ndata getting copied...!\n"
+                        ;;
+                3)
+                        echo -en "Comp \ndata getting copied...\n!"
+                        ;;
+                *)
+                        echo -en " none \n Enter a proper deparment again \n"
+                        ;;
+        esac
+
+elif [ $div == "3D" ] || [ $div == "3d" ]
+then
+        echo -e "\nYou have given 3D \n"
+
+else
+        echo -en "\nEnter correct division..\n"
+fi
+
