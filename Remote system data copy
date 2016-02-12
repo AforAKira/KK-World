@@ -1,0 +1,192 @@
+#! /bin/bash
+
+# :beginhead	
+# :author		:kiran-an
+# :support		:kiran-an
+# :type			:bourne
+# :title		:manage testdata
+# :description		:take a test machine backup 
+# :endhead
+
+
+#Test mahcines names
+#palak
+#poisaag
+
+usage ()
+{
+	echo -en "\nUsage : $0 [-i <division>]   [-d <department>]   [-s <system no or system name>] \n" 
+	space='    '
+	echo -en "\n Options:\n"
+	echo -en "\n$space -i$space--2D\3D \n\n$space -d$space--2D Departments [ Roto\RotoPrep\Comp ]\n"
+	echo -en "\n$space$space$space--3D Departments [ Modeling\MM\DMP\Animation\Rigging\Texturing ] \n"
+	echo -en "\n$space -s$space--system no or system name [1 or 2/palak or poisaag] \n\n"
+
+	exit 1;
+}
+
+#usage
+slash="/"
+#spath=/disk1/Test
+dpath=/jobs/tvcResources/bangComms/Kiran
+bkppath=/jobs/tvcResources/bangComms/Kiran/TEST_BKP
+
+while getopts ':i:d:s:' opt; do
+#	echo "Given no of argments:$#"
+	if [ $# -gt 6 ];
+	then
+		echo -en "\nInavlid Arguments..\n"
+		usage
+		exit 1
+	fi
+	case "${opt}" in
+
+		i)
+			i=${OPTARG}
+			i=${i^^}
+			if [ $i == '2D' ] || [ $i == '3D' ];
+			then
+				div=$i
+			else
+				echo -en "\nInvalid Arguments"
+				usage
+				exit 1
+			fi	
+			;;
+			
+		d)
+			d=${OPTARG}
+			d=${d^^}
+			if [ $d == 'ROTO' ] || [ $d == 'ROTOPREP' ] || [ $d == 'COMP' ];
+			then
+				if [ $div == '3D' ];
+				then
+					echo -en "\nInvalid Department arguments\n"
+					usage
+					exit 1
+				else
+					dep=$d
+#					echo -en "Both division and department:"$div$slash$dep
+				fi
+			
+			elif [ $d == 'ANIMATION' ] || [ $d == 'MM' ] || [ $d == 'DMP' ] || [ $d == 'MODELING' ] || [ $d == 'RIGGING' ] || [ $d == 'TEXTURING' ];
+			then
+				if [ $div == '2D' ];
+				then
+					echo -en "\n Invalid Department arguments\n"
+					usage
+					exit 1
+				else
+					dep=$d
+					echo "Both division and departments :"$div$slash$dep
+				fi
+			else
+				echo -en "\n Invalid Arguments\n"
+				usage
+				exit 1
+			fi
+			;;
+		s)
+			s=${OPTARG}
+			echo -en "Given value is :$s \n"
+			if [ $s == 1 ]
+			then
+				host=palak
+				ping -c 1 $host 1>&/dev/null
+				if [ $? -ne 0 ];
+				then
+					echo -en "\nLooks like 'Test System 1' is not reachable.  Please contact IT Team\n\n"
+					exit 1
+				else
+					echo -en "\n'Test Systen 1' is reachable\n"
+				fi
+
+			elif [ $s == 2 ]
+			then	
+				host=poisaag
+				ping -c 1 $host 1>&/dev/null
+				if [ $? -ne 0 ];
+				then
+					echo -en "\nLooks like 'Test System 2' is not reachable. Please contact IT Team\n"
+					exit 1
+				else
+					echo -en "\n'Test System 2' is reachable\n"
+				fi
+			else
+				echo -en "\n This doesn't look like a valid system option\n"
+				usage
+				exit 0	
+			fi
+
+#		usage
+#		exit 0
+			;;
+		*)	
+			usage
+			;;
+	esac
+done
+
+spath=/mpc/$host'1'/Test
+cd $spath
+echo -en "\n Read status : $?\n"
+#exit 0
+can="CANDIDATE"
+dt=`date +%d-%m-%Y`
+subpath=$div$slash$dep$slash
+
+spath=$spath$slash$subpath$can$slash
+dpath=$dpath$slash$subpath$can$slash$dt
+#bdpath=$dpath$slash$subpath$can$slash
+
+echo -en "\nSource path from the given: $spath\n"
+echo -en "\nDestination path :$dpath\n"
+
+if [ ! -d $dpath ];
+then
+	echo "Destination path doesn't exists"
+	mkdir -p $dpath
+else
+	echo "Looks like dest path does exist"
+fi
+
+if [ `ls $spath | wc -l` == 0 ];
+then
+	echo -en "\n Looks like there is no data in the Given path..\n Please recheck Division and Departments\n"
+	exit 1
+fi
+
+echo -en "\nData getting copied\n"
+rsync -rv $spath $dpath > /dev/null
+if [ $? == 0 ];
+then
+#	sleep 1
+	echo "Data has been copied successfully.."
+	dpath=$bkppath$slash$subpath$can$slash$dt$slash
+	if [ ! -d $dpath ];
+	then
+		echo -en "\nThis Backup path doesn't exist\n"
+		mkdir -p $dpath
+#		exit 1
+	fi
+	
+	for i in  `ls $spath`
+	do
+		echo " Directory folder '$i' getting moved to archve"
+		echo "$spath$i"
+#		spath=$spath$i
+		mv $spath$i $dpath 1>&/dev/null
+	done
+#	mv $spath $dpath 1>&/dev/null
+	if [ $? == 1 ]
+	then
+		echo -en "\nData Backup movement was unsuccessfull\n"
+	else
+		echo -en "\nData has been Archived\n"
+	fi
+
+fi
+
+#exit 0
+
+
