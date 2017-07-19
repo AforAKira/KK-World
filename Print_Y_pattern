@@ -1,0 +1,122 @@
+#!/bin/bash
+## Inputs 1 & 2
+read n
+i=1
+t=0
+tj=34
+uj=26
+vj=58
+wj=42
+xj=74
+te=66
+
+while [ $i -le 63 ]
+do
+    lt=1
+    lq=1
+    st=1
+    tt=1
+    ut=1
+    vt=1
+#    printf $i
+    j=1
+    while [ $j -le 100 ]
+    do
+        us=0
+        ########### For value 2
+        if [ $i -ge 24 ] && [ $i -le 31 ] && [ $n == 2 ]
+        then
+            if [ $j == 34 ] || [ $j == 66 ]
+            then
+#               if [ $i -gt 29 ] && [ $i -lt 43 ]
+#               then
+#                    let t=$t+1
+                printf "1"
+                us=1
+#                else
+#                    printf "1"
+#                    us=1
+#                fi    
+            fi                 
+        fi
+        ######## Small 2 ys
+# 1st y : row 16 -23 - left : col1 26-33 col2  58-65
+# right col1 : 42-35 col2 : 74-67
+
+        if [ $i -ge 16 ] && [ $i -le 23 ] && [ $n == 2 ]
+        then
+            if [[ $j -ge 26 && $j -le 33 || $j -ge 58 && $j -le 65 || $j -ge 35 && $j -le 42 || $j -ge 67 && $j -le 74 ]]
+            then
+                 if [ $uj -le 33 ] && [ $uj == $j ] && [ $st == 1 ]
+                 then
+                    printf "1"
+                    us=1
+                    let uj=$uj+1
+                    st=0
+#                    let st=$st+1
+                  elif [ $vj -le 65 ]  && [ $vj == $j ] && [ $tt == 1 ]
+                  then
+                    printf "1"
+                    us=1
+                    let vj=$vj+1
+                    tt=0
+                  elif [ $wj -ge 35 ]  && [ $wj == $j ] && [ $ut == 1 ]
+                  then
+                    printf "1"
+                    us=1
+                    let wj=$wj-1
+                    ut=0
+                  elif [ $xj -ge 67 ]  && [ $xj == $j ] && [ $vt == 1 ]
+                  then
+                    printf "1"
+                    us=1
+                    let xj=$xj-1
+                    vt=0
+                 fi   
+            fi
+        fi    
+  
+        
+        ##############        
+        if [ $i -ge 32 ] && [ $i -le 47 ]
+        then
+            if [ $j -ge 34 ] && [ $j -le 67 ]
+            then
+                if [ $tj -le 49 ] && [ $tj == $j ] && [ $lt == 1 ]
+                then
+                    printf "1"
+                    us=1
+                    let tj=$tj+1
+                    lt=0
+                    ## 66 - 52
+                fi    
+                if [ $te -ge 51 ] && [ $te == $j ] && [ $lq == 1 ]
+                then
+                    printf "1"
+                    us=1
+                    let te=$te-1
+                    lq=0
+                fi
+            fi           
+        fi
+        ###########
+        if [ $i -ge 48 ] && [ $j == 50 ]
+        then
+            printf "1"
+            us=1
+        fi                     
+        if [ $us != 1  ]
+        then
+            printf "_"
+        fi
+        let j=$j+1
+    done
+    let i=$i+1
+    printf "\n"
+done
+## 
+#while row i > 20 && i < 29 & column = 34 and 67 print 1
+# 32 - 46 
+# print 1
+## row 16 -23 - col 26-33 42-35
+## col 58-65 : 74-67
